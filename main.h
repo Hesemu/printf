@@ -1,5 +1,5 @@
 #ifndef MAIN_H
-#define "main.h"
+#define MAIN_H
 
 int _printf(const char *format, ...);
 
