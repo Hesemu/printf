@@ -1,56 +1,50 @@
-#include <stdarg.h>
 #include "main.h"
+
 /**
- *_printf-Own Printf function
- *@format: Int Value
- *
- *Return: Int value
+ * _printf - prints formatted data to stdout
+ * @format: string that contains the format to print
+ * Return: number of characters written
  */
-
-int _printf(const char *format, ...)
+int _printf(char *format, ...)
 {
-        va_list args;
-        int i = 0, j = 0, counter = 0;
+	int written = 0, (*structype)(char *, va_list);
+	char q[3];
+	va_list pa;
 
-        format_opt data_t[] = {
-                {"c", print_c}, {"s", print_s}, {"%", print_mod},
-                {"i", print_i},
-                {"d", print_d}, {"R", rot_13}, {"r", print_rev},
-                {"u", print_deci},
-                {"b", print_binary}, {"o", print_octal},
-                {"x", print_hexa},
-                {"X", print_hexa_UP}, {NULL, NULL}
-        };
-        va_start(args, format);
-        if (format == NULL)
-                return (-1);
-        for (i = 0; format && format[i]; i++)
-        {
-                if (format[i] != '%')
-                {
-                        if (_putchar(format[i]) < 0)
-                                return (-1);
-                        counter++;
-                        continue;
-                }
-                if (format[i + 1] == '\0')
-                        return (-1);
-                for (j = 0; data_t[j].type; j++)
-                {
-                        if (*data_t[j].type == format[i + 1])
-                        {
-                                counter += data_t[j].f(args);
-                                break;
-                        }
-                }
-                if (data_t[j].type == NULL)
-                {
-                        if (_putchar(format[i]) < 0 || _putchar(format[i + 1])
-                                        < 0)
-                                return (-1);
-                        counter += 2; }
-                i++;
-        }
-        va_end(args);
-        return (counter);
+	if (format == NULL)
+		return (-1);
+	q[2] = '\0';
+	va_start(pa, format);
+	_putchar(-1);
+	while (format[0])
+	{
+		if (format[0] == '%')
+		{
+			structype = driver(format);
+			if (structype)
+			{
+				q[0] = '%';
+				q[1] = format[1];
+				written += structype(q, pa);
+			}
+			else if (format[1] != '\0')
+			{
+				written += _putchar('%');
+				written += _putchar(format[1]);
+			}
+			else
+			{
+				written += _putchar('%');
+				break;
+			}
+			format += 2;
+		}
+		else
+		{
+			written += _putchar(format[0]);
+			format++;
+		}
+	}
+	_putchar(-2);
+	return (written);
 }
